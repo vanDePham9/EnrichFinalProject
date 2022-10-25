@@ -1,0 +1,20 @@
+{
+  "description": "This is the official document of EnrichFinalProject's Shopping Website produced by DePV.",
+  "name": "Shopping APIs Documentation",
+  "sampleUrl": "http://localhost:3000",
+  "template": {
+    "forceLanguage": "en",
+    "withCompare": true
+  },
+  "footer": {
+    "title": "Contact",
+    "filename": "./markdown/footer.md"
+  },
+  "order": [
+    "Authentication",
+    "User",
+    "Product",
+    "Cart"
+  ],
+  "version": "0.1.0"
+}

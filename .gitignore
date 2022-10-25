@@ -1,0 +1,10 @@
+# package directories
+package-lock.json
+package.json
+node_modules
+
+# editor directories
+.editoreconfig
+
+# apidoc directories
+apidoc
