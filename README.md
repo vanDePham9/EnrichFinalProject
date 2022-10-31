@@ -1,9 +1,10 @@
 # Enrich Final Project
+
 Simple Shopping Website application with Node.js, ExpressJs.
 
 ## Description:
 
-  This is Shopping Website. You can CRUD user, product, cart. 
+This is Shopping Website. You can CRUD user, product, cart.
 
 ## Getting Started
 
@@ -14,6 +15,7 @@ Before running this application you need to run the command below step by step.
 ```bash
 npm install
 ```
+
 > Install all dependencies
 
 ### Executing program
@@ -32,18 +34,5 @@ npm run build:docs
 
 ### Note :
 
-> The application only runs locally because the application owner still don't deploy the application anywhere.
-
-## Command:
-
-After updating env file, you can deploy the function by issuing command like:
-
-```bash
-npm run deploy -- -s <stage_value>
-```
-
-Example with `dev` env:
-
-```bash
-npm run deploy -- -s dev
-```
+> The application deployed by heroku git cli.
+> Application endpoint: https://obscure-lake-50123.herokuapp.com.

@@ -1,16 +1,16 @@
 const mongoose = require("mongoose");
 const Cart = mongoose.model("cart");
-const getUserId = require('../utils/getUserId');
-
+const product = mongoose.model("product");
+const getUserId = require("../utils/getUserId");
 /**
  * @api {get} /cart/all?order=:order&sort=:sort&page=:page&limit=:limit Get All Cart
  * @apiVersion 0.1.0
  * @apiName GetCart
  * @apiGroup Cart
  * @apiPermission admin
- * 
+ *
  * @apiUse AuthorizationToken
- * 
+ *
  * @apiParam {string} [order] The date field cart to sort in cart object. Default: `createdAt`.
  * @apiParam {string} [sort] A sort type of order field (`ASC` or `DESC`). Default: `DESC`.
  * @apiParam {string} [page] The current page of cart report. The cart page start from 0. Default: 0.
@@ -45,14 +45,13 @@ const getUserId = require('../utils/getUserId');
  * @apiUse CartError
  *
  */
-
 /**
  * @api {get} /cart Get user cart
  * @apiVersion 0.1.0
  * @apiName GetUserCart
  * @apiGroup Cart
  * @apiPermission application
- * 
+ *
  * @apiUse AuthorizationToken
  *
  * @apiSuccess {String} _id Id of the cart.
@@ -84,27 +83,28 @@ const getUserId = require('../utils/getUserId');
  * @apiUse CartError
  *
  */
-
 /**
  * @api {post} /product Create/Update a cart
  * @apiVersion 0.1.0
  * @apiName CreateUpdateCart
  * @apiGroup Cart
  * @apiPermission application
- * 
+ *
  * @apiUse AuthorizationToken
  *
- * @apiBody {String} productId The product id name.
+ * @apiBody {String} productId The product id can find by [GetAllProduct](#api-Product-GetProduct) APIs.
  * @apiBody {String} name The product name.
  * @apiBody {Number} quantity The product quantity.
  * @apiBody {Number} price The product price.
+ * @apiBody {Number} cartId The cart id.
  *
  * @apiParamExample {json} Input
  *    {
  *         "productId": "635759d964d1782aabae4b36",
  *         "price": 1000,
  *         "quantity": 2,
- *         "name": "snack"
+ *         "name": "snack",
+ *         "cartId": "876182368176283761"
  *     }
  *
  * @apiSuccess {String} _id Id of the product.
@@ -116,27 +116,59 @@ const getUserId = require('../utils/getUserId');
  * @apiSuccessExample Success-Response:
  *     HTTP/1.1 200 OK
  *     {
- *         "userId": "6357a477d8509ce1b28c4fa2",
- *         "products": [
+ *         "_id": "636230567b686f681bda20ae",
+ *         "userId": "635fd669a53868845f306068",
+ *         "carts": [
  *             {
- *                 "productId": "635759d964d1782aabae4b36",
- *                 "quantity": 2,
- *                 "name": "snack",
- *                 "price": 1000,
- *                 "_id": "635901162bd553603c104732"
+ *                 "cartId": "635f9da710e3ff0b2a9052f6",
+ *                 "products": [
+ *                     {
+ *                         "productId": "635f9da710e3ff0b2a9052f2",
+ *                         "quantity": 10,
+ *                         "name": "bicycle",
+ *                         "price": 2000,
+ *                         "_id": "636230567b686f681bda20b0"
+ *                     },
+ *                     {
+ *                         "productId": "635f9db810e3ff0b2a9052f5",
+ *                         "quantity": 8,
+ *                         "name": "boat",
+ *                         "price": 12000,
+ *                         "_id": "636234f46c4d6a2d8b94a5bd"
+ *                     }
+ *                 ],
+ *                 "_id": "636230567b686f681bda20af"
+ *             },
+ *             {
+ *                 "cartId": "876182368176283761",
+ *                 "products": [
+ *                     {
+ *                         "productId": "635f9db810e3ff0b2a9052f5",
+ *                         "quantity": 8,
+ *                         "name": "boat",
+ *                         "price": 12000,
+ *                         "_id": "63623521774c1dd9c4c10d1d"
+ *                     },
+ *                     {
+ *                         "productId": "635f9d8910e3ff0b2a9052ef",
+ *                         "quantity": 10,
+ *                         "name": "cruise",
+ *                         "price": 20000,
+ *                         "_id": "63623570774c1dd9c4c10d27"
+ *                     }
+ *                 ],
+ *                 "_id": "63623521774c1dd9c4c10d1c"
  *             }
  *         ],
  *         "active": true,
- *         "_id": "635901162bd553603c104731",
- *         "modifiedOn": "2022-10-26T09:42:46.929Z",
- *         "__v": 0
+ *         "modifiedOn": "2022-11-02T08:54:46.693Z",
+ *         "__v": 3
  *     }
  *
  *
  * @apiUse CartError
  *
  */
-
 /**
  * @api {delete} /cart/:id Delete a Cart
  * @apiVersion 0.1.0
@@ -144,7 +176,7 @@ const getUserId = require('../utils/getUserId');
  * @apiGroup Cart
  * @apiPermission admin
  * @apiPermission application
- * 
+ *
  * @apiUse AuthorizationToken
  *
  * @apiParam {Number} id Cart unique ID.
@@ -166,20 +198,18 @@ const getUserId = require('../utils/getUserId');
  * @apiUse CartError
  *
  */
-
 // Admin role
- exports.list_all_carts = (req, res) => {
+exports.list_all_carts = (req, res) => {
   const {
     limit = 10,
     page = 0,
     order = "createdDate",
     sort = "desc",
   } = req.query;
-  Cart
-    .find({}, (err, carts) => {
-      if (err) return res.send(err);
-      return res.json(carts);
-    })
+  Cart.find({}, (err, carts) => {
+    if (err) return res.send(err);
+    return res.json(carts);
+  })
     .sort({ [order]: sort })
     .limit(limit)
     .skip(limit * page);
@@ -193,7 +223,6 @@ exports.delete_a_cart = async (req, res) => {
     });
   });
 };
-
 // Regular User role
 exports.list_a_carts = async (req, res) => {
   const token = req.header("Authorization");
@@ -210,25 +239,50 @@ exports.list_a_carts = async (req, res) => {
     res.status(500).send("Something went wrong when get cart.");
   }
 };
+const validate = (product, condition) => {
+  const { name, price } = condition;
+  if (name !== product.name || price !== product.price) {
+    return true;
+  }
+  return false;
+};
 exports.create_a_cart = async (req, res) => {
-  const { productId, quantity, name, price } = req.body;
+  const { productId, quantity, name, price, cartId } = req.body;
   const token = req.header("Authorization");
   const userId = getUserId(token);
-
   try {
+    const exitedProduct = await product.findById(productId);
+    console.log("exitedProduct = ", exitedProduct);
+    if (!exitedProduct) {
+      return res.status(400).send("product not found!");
+    }
+    const validateProduct = validate(exitedProduct, { name, price });
+    if (validateProduct) {
+      return res.status(400).send("name or price not match!");
+    }
     let cart = await Cart.findOne({ userId });
     if (cart) {
       //cart exists for user
-      let itemIndex = cart.products.findIndex(p => p.productId == productId);
-
+      let itemIndex = cart.carts.findIndex((c) => c.cartId == cartId);
       if (itemIndex > -1) {
-        //product exists in the cart, update the quantity
-        let productItem = cart.products[itemIndex];
-        productItem.quantity = quantity;
-        cart.products[itemIndex] = productItem;
+        //carts exists in the cart, update the product
+        let cartItem = cart.carts[itemIndex];
+        let productIndex = cartItem.products.findIndex(
+          (p) => p.productId == productId
+        );
+        if (productIndex > -1) {
+          let productItem = cartItem.products[productIndex];
+          productItem.quantity = quantity;
+          cartItem.products[productIndex] = productItem;
+        } else {
+          cartItem.products.push({ productId, quantity, name, price });
+        }
       } else {
-        //product does not exists in cart, add new item
-        cart.products.push({ productId, quantity, name, price });
+        //carts does not exists in cart, add new item
+        cart.carts.push({
+          cartId,
+          products: [{ productId, quantity, name, price }],
+        });
       }
       cart = await cart.save();
       return res.status(201).send(cart);
@@ -236,9 +290,13 @@ exports.create_a_cart = async (req, res) => {
       //no cart for user, create new cart
       const newCart = await Cart.create({
         userId,
-        products: [{ productId, quantity, name, price }]
+        carts: [
+          {
+            cartId,
+            products: [{ productId, quantity, name, price }],
+          },
+        ],
       });
-
       return res.status(201).send(newCart);
     }
   } catch (err) {

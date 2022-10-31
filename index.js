@@ -17,7 +17,7 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(logger("dev"));
-const port = 3000;
+const port = process.env.PORT || 5000;
 const { MONGODB_HOST } = process.env
 
 // set up mongoose
